@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PostsSeeder extends Seeder
 {
@@ -15,10 +18,15 @@ class PostsSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::factory()->count(5)->create();
+        $random_user_id = fn() => User::inRandomOrder()->first()->id;
 
-        Post::factory()->count(100)->create([
-            'author_id' => fn() => $users->random(),
-        ]);
+        $posts = Post::factory()
+            ->count(100)
+            ->has(Comment::factory()->count(2)->state(fn()=> ['user_id' => $random_user_id]))
+            ->create(['author_id' => $random_user_id]);
+
+        $posts->each(function(Post $post) {
+            $post->tags()->saveMany(Tag::inRandomOrder()->take(2)->get());
+        });
     }
 }
