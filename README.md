@@ -7,7 +7,7 @@
 ```
 $ composer install
 $ php artisan migrate:fresh --seed
-$ php artisan setve
+$ php artisan serve
 ```
 
 ## endpoints
